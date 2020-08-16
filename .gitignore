@@ -1,0 +1,6 @@
+# Directories
+bin/
+.vscode/
+
+# Files
+run_code.bat
