@@ -24,6 +24,9 @@ using u32 = uint32_t;
 	#error "Other toolsets aren't currently supported"
 #endif
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 struct fvec3 {
 	float x, y, z;
 };
@@ -159,6 +162,30 @@ int main() {
 	printf("Number Of TexCoords %llu\n", texture_coords.size());
 	printf("Number Of Normals %llu\n", normals.size());
 	printf("Number Of Faces %llu\n", faces.size());
+
+
+	if(!glfwInit()){
+		printf("Failed to initialize GLFW\n");
+		ASSERT(false);
+	}
+
+	GLFWwindow* window = glfwCreateWindow(800, 600, "Window", nullptr, nullptr);
+	glfwMakeContextCurrent(window);
+
+	auto status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+	if(!status){
+		printf("Failed to initialize glad\n");
+		ASSERT(false)
+	}
+
+
+	glClearColor(0.4f, 0.2f, 0.8f, 1.f);
+
+	while(!glfwWindowShouldClose(window)){
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+		glfwPollEvents();
+		glfwSwapBuffers(window);
+	}
 
 	return 0;
 
