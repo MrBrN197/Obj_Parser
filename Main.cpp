@@ -12,6 +12,7 @@
 #include <string>
 
 using u8 = uint8_t;
+using u16 = uint16_t;
 using u32 = uint32_t;
 
 #ifdef _MSC_VER
@@ -55,7 +56,7 @@ int main() {
 	std::vector<fvec3> normals;
 	std::vector<Vertex> faces;
 
-	std::ifstream file("cube.obj");
+	std::ifstream file("plane.obj");
 	if( file.is_open() ) {
 		std::string str;
 		while(file.good()){
@@ -175,18 +176,44 @@ int main() {
 	auto status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	if(!status){
 		printf("Failed to initialize glad\n");
+		glfwTerminate();
 		ASSERT(false)
 	}
 
+	u32 vertexArray;
+	glGenVertexArrays(1, (GLuint*)&vertexArray);
+	glBindVertexArray(vertexArray);
+
+	u32 pointsBuffer;
+	u32 indicesBuffer;
+	glGenBuffers(1, (GLuint*)&pointsBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, (GLuint)pointsBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fvec3) * points.size(), points.data(), GL_STATIC_DRAW);
+
+	glGenBuffers(1, &indicesBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
+	u16* indices = new u16[faces.size() * 3];
+	for(int i = 0; i < faces.size(); i++){
+		Vertex vertex = faces[i];
+		*(indices + i*3+0) = (u16)vertex.points.x;
+		*(indices + i*3+1) = (u16)vertex.points.y;
+		*(indices + i*3+2) = (u16)vertex.points.z;
+	}
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(u16) * faces.size() * 3, indices, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (const void*)0);
+
 
 	glClearColor(0.4f, 0.2f, 0.8f, 1.f);
-
 	while(!glfwWindowShouldClose(window)){
-		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glfwPollEvents();
+		glDrawElements(GL_TRIANGLES, (int)(faces.size() * 3), GL_UNSIGNED_SHORT, nullptr);
 		glfwSwapBuffers(window);
 	}
 
+	glfwTerminate();
 	return 0;
 
 }
