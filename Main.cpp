@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 
 #include <vector>
 #include <regex>
@@ -11,19 +10,9 @@
 #include <fstream>
 #include <string>
 
-using u8 = uint8_t;
-using u16 = uint16_t;
-using u32 = uint32_t;
+#include "Core.h"
 
-#ifdef _MSC_VER
-	#ifdef _DEBUG
-		#define ASSERT(x) if(!(x)) {printf("ASSERTION RAISED [%s:%d]\n", __FILE__, __LINE__); __debugbreak(); }
-	#else
-		#define ASSERT(x)
-	#endif
-#else
-	#error "Other toolsets aren't currently supported"
-#endif
+#include "Shader.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -204,6 +193,8 @@ int main() {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (const void*)0);
 
+	Shader shader("shader.vs", "shader.fs");
+	shader.Bind();
 
 	glClearColor(0.4f, 0.2f, 0.8f, 1.f);
 	while(!glfwWindowShouldClose(window)){
