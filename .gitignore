@@ -1,6 +1,7 @@
 # Directories
 bin/
 .vscode/
+/models
 
 # Files
 run_code.bat
